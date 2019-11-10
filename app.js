@@ -15,8 +15,11 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 
 app.get("/", function(req, res) {
-  res.render('home');
+  Post.findAll({order:[['id', 'DESC']]}).then(function(posts){
+    res.render('home', {posts: posts});
+  });
 })
+
 app.get("/cadastro", function(req, res) {
   res.render('formulario');
 })
@@ -31,6 +34,15 @@ app.post("/adicionar", function(req, res) {
     res.send('Houve um erro: ' + erro);
   })
 })
+
+app.get("/deletar/:id", function(req, res){
+  Post.destroy({where:{'id':req.params.id}}).then(function(){
+    res.send("Postagem deletada com sucesso!")
+  }).catch(function(erro){
+    res.send("Esta postagem não existe!");
+  })
+})
+
 //localhost:8081
 app.listen(8081, function () {
   console.log("Servidor rodando na url http://localhost:8081");
